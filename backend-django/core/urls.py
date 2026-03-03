@@ -17,22 +17,25 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from inventory.views import CategoryViewSet, ProductViewSet, AuditLogViewSet
+from inventory.views import CategoryViewSet, ProductViewSet
 from reports.views import DispatchReportViewSet
 from support.views import SupportTicketViewSet
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework_simplejwt.views import TokenRefreshView
+from .views import CustomTokenObtainPairView
 
 router = DefaultRouter()
 router.register(r'categories', CategoryViewSet)
 router.register(r'products', ProductViewSet)
-router.register(r'audit-logs', AuditLogViewSet)
 router.register(r'reports', DispatchReportViewSet)
 router.register(r'support-tickets', SupportTicketViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls))
+    path('api/', include(router.urls)),
+    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 
 if settings.DEBUG:

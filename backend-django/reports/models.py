@@ -2,7 +2,7 @@ from django.db import models
 from inventory.models import Product
 
 class DispatchReport(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name='dispatches')
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name='dispatches')
     router_id = models.CharField("ID", max_length=50, blank=True, null=True)
     serial_number = models.CharField("Serial", max_length=100)
     mac_addres = models.CharField("MAC", max_length=50, blank=True, null=True)
@@ -20,8 +20,9 @@ class DispatchReport(models.Model):
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        self.product.quantity += 1
-        self.product.save()
+        if self.product:
+            self.product.quantity += 1
+            self.product.save()
         super().delete(*args, **kwargs)
 
     def __str__(self):

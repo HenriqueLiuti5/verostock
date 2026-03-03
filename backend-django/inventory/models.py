@@ -19,12 +19,3 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
-    
-class AuditLog(models.Model):
-    ACTIONS = [('INSERT', 'Inserção'), ('UPDATE', 'Alteração'), ('DELETE', 'Exclusão')]
-
-    product_name = models.CharField(max_length=255)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    action = models.CharField(max_length=10, choices = ACTIONS)
-    changes = models.JSONField()
-    timestamp = models.DateTimeField(auto_now_add=True)
