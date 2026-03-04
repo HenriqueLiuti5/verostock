@@ -63,7 +63,8 @@ export default function Dispatch() {
     }
   };
 
-  const getProductName = (id) => {
+  const getProductName = (id, report = null) => {
+    if (report && report.product_name) return report.product_name; 
     const prod = products.find(p => p.id === id);
     return prod ? prod.name : 'Produto Excluído/N/A';
   };
@@ -72,7 +73,7 @@ export default function Dispatch() {
     const searchLower = searchTerm.toLowerCase();
     const dateStr = new Date(r.date_sent + 'T00:00:00').toLocaleDateString('pt-BR');
     return (
-      getProductName(r.product).toLowerCase().includes(searchLower) ||
+      getProductName(r.product, r).toLowerCase().includes(searchLower) ||
       r.client_name.toLowerCase().includes(searchLower) ||
       (r.router_id && r.router_id.toLowerCase().includes(searchLower)) ||
       (r.serial_number && r.serial_number.toLowerCase().includes(searchLower)) ||
@@ -83,91 +84,94 @@ export default function Dispatch() {
 
   return (
     <div className="relative w-full">
-      <header className="mb-6 md:mb-10">
-        <h2 className="text-2xl font-bold tracking-tight text-color5 dark:text-white">Envios</h2>
-        <p className="text-color5/60 dark:text-color4/60 mt-1.5 text-sm">Gerencie os despachos e notas fiscais de equipamentos.</p>
+      <header className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-color5 dark:text-white">Envios</h2>
+          <p className="text-color5/60 dark:text-color4/60 mt-1 text-sm">Gerencie os despachos e notas fiscais.</p>
+        </div>
       </header>
       
-      <form onSubmit={handleSubmit} className="mb-8 md:mb-12 bg-white dark:bg-slate-900 border border-color4 dark:border-slate-800 p-5 md:p-8 rounded-2xl shadow-sm grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 md:gap-6 transition-colors duration-300">
-        <div className="flex flex-col gap-2">
-          <label className="text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Produto</label>
+      {/* Container de Formulário Compacto */}
+      <form onSubmit={handleSubmit} className="mb-8 bg-slate-50/50 dark:bg-slate-800/30 border border-color4/80 dark:border-slate-700/80 p-4 md:p-5 rounded-2xl shadow-sm grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 transition-colors duration-300">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Produto</label>
           <select 
-            className="w-full p-3 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all appearance-none shadow-sm truncate" 
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all appearance-none shadow-sm truncate text-sm" 
             value={form.product} 
             onChange={e => setForm({...form, product: e.target.value})} 
             required
           >
-            <option value="">Selecione o Produto</option>
-            {products.map(p => <option key={p.id} value={p.id}>{p.name} (Estoque: {p.quantity})</option>)}
+            <option value="">Selecione...</option>
+            {products.map(p => <option key={p.id} value={p.id}>{p.name} (Qtd: {p.quantity})</option>)}
           </select>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Nome do Cliente</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Cliente</label>
           <input 
-            placeholder="Ex: João da Silva" 
-            className="w-full p-3 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm" 
+            placeholder="Nome do cliente" 
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm" 
             value={form.client_name} 
             onChange={e => setForm({...form, client_name: e.target.value})} 
             required 
           />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Router ID</label>
-          <input 
-            placeholder="Opcional" 
-            className="w-full p-3 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm" 
-            value={form.router_id} 
-            onChange={e => setForm({...form, router_id: e.target.value})} 
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label className="text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Serial Number</label>
-          <input 
-            placeholder="SN do equipamento" 
-            className="w-full p-3 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm" 
-            value={form.serial_number} 
-            onChange={e => setForm({...form, serial_number: e.target.value})} 
-            required 
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label className="text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">MAC Address</label>
-          <input 
-            placeholder="00:00:00:00:00:00" 
-            className="w-full p-3 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm" 
-            value={form.mac_addres} 
-            onChange={e => setForm({...form, mac_addres: e.target.value})} 
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label className="text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Data de Envio</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Data</label>
           <input 
             type="date" 
-            className="w-full p-3 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm dark:[color-scheme:dark]" 
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm dark:[color-scheme:dark]" 
             value={form.date_sent} 
             onChange={e => setForm({...form, date_sent: e.target.value})} 
             required 
           />
         </div>
 
-        <div className="sm:col-span-2 md:col-span-2 flex flex-col gap-2">
-          <label className="text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Nota Fiscal (PDF)</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Router ID</label>
+          <input 
+            placeholder="Opcional" 
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm" 
+            value={form.router_id} 
+            onChange={e => setForm({...form, router_id: e.target.value})} 
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Serial Number</label>
+          <input 
+            placeholder="SN do equipamento" 
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm" 
+            value={form.serial_number} 
+            onChange={e => setForm({...form, serial_number: e.target.value})} 
+            required 
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">MAC Address</label>
+          <input 
+            placeholder="00:00:00:00:00:00" 
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm" 
+            value={form.mac_addres} 
+            onChange={e => setForm({...form, mac_addres: e.target.value})} 
+          />
+        </div>
+
+        <div className="sm:col-span-2 flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Nota Fiscal (PDF)</label>
           <input 
             id="fileInput" 
             type="file" 
             accept="application/pdf" 
-            className="w-full p-2.5 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:uppercase file:tracking-wider file:bg-color4/40 dark:file:bg-slate-700 file:text-color5 dark:file:text-white hover:file:bg-color4/60 dark:hover:file:bg-slate-600 file:transition-colors focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all cursor-pointer shadow-sm text-sm" 
+            className="w-full px-2 py-1.5 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-color4/40 dark:file:bg-slate-700 file:text-color5 dark:file:text-white hover:file:bg-color4/60 dark:hover:file:bg-slate-600 file:transition-colors focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all cursor-pointer shadow-sm text-sm" 
             onChange={e => setFile(e.target.files[0])} 
           />
         </div>
 
-        <div className="flex items-end justify-end pt-2 sm:col-span-2 md:col-span-1">
-          <button type="submit" className="w-full bg-gradient-to-r from-color2 to-color3 hover:opacity-90 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md flex items-center justify-center gap-2">
+        <div className="flex items-end justify-end pt-1 md:col-span-1">
+          <button type="submit" className="w-full bg-gradient-to-r from-color2 to-color3 hover:opacity-90 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-md flex items-center justify-center gap-2 text-sm">
             Registrar Envio
           </button>
         </div>
@@ -182,7 +186,7 @@ export default function Dispatch() {
           <input 
             type="text" 
             placeholder="Pesquisar envios ou datas..." 
-            className="w-full sm:w-72 pl-10 p-2.5 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm"
+            className="w-full sm:w-72 pl-10 px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
@@ -194,26 +198,26 @@ export default function Dispatch() {
           <table className="w-full text-left border-collapse whitespace-nowrap min-w-max">
             <thead>
               <tr className="bg-color1/50 dark:bg-slate-800/50 border-b border-color4 dark:border-slate-800">
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Produto</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Cliente</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Router ID</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Serial</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">MAC</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Data Envio</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Nota Fiscal</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest text-right">Ações</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Produto</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Cliente</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Router ID</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Serial</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">MAC</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Data Envio</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Nota Fiscal</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-color4/40 dark:divide-slate-800/80">
               {filteredReports.map(r => (
                 <tr key={r.id} className="hover:bg-color1 dark:hover:bg-slate-800/50 transition-colors duration-150 group">
-                  <td className="px-4 md:px-6 py-4 text-sm font-medium text-color5 dark:text-white">{getProductName(r.product)}</td>
-                  <td className="px-4 md:px-6 py-4 text-sm text-color5/80 dark:text-color4/80">{r.client_name}</td>
-                  <td className="px-4 md:px-6 py-4 text-sm text-color5/50 dark:text-color4/50">{r.router_id || '-'}</td>
-                  <td className="px-4 md:px-6 py-4 text-sm font-mono text-color5/80 dark:text-color4/80">{r.serial_number}</td>
-                  <td className="px-4 md:px-6 py-4 text-sm font-mono text-color5/50 dark:text-color4/50">{r.mac_addres || '-'}</td>
-                  <td className="px-4 md:px-6 py-4 text-sm text-color5/80 dark:text-color4/80">{new Date(r.date_sent + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                  <td className="px-4 md:px-6 py-4 text-sm">
+                  <td className="px-4 md:px-6 py-3.5 text-sm font-medium text-color5 dark:text-white">{getProductName(r.product, r)}</td>
+                  <td className="px-4 md:px-6 py-3.5 text-sm text-color5/80 dark:text-color4/80">{r.client_name}</td>
+                  <td className="px-4 md:px-6 py-3.5 text-sm text-color5/50 dark:text-color4/50">{r.router_id || '-'}</td>
+                  <td className="px-4 md:px-6 py-3.5 text-sm font-mono text-color5/80 dark:text-color4/80">{r.serial_number}</td>
+                  <td className="px-4 md:px-6 py-3.5 text-sm font-mono text-color5/50 dark:text-color4/50">{r.mac_addres || '-'}</td>
+                  <td className="px-4 md:px-6 py-3.5 text-sm text-color5/80 dark:text-color4/80">{new Date(r.date_sent + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                  <td className="px-4 md:px-6 py-3.5 text-sm">
                     {r.invoice_pdf ? (
                       <a href={r.invoice_pdf} target="_blank" rel="noreferrer" className="inline-flex items-center px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 text-color5 dark:text-white hover:bg-color1 dark:hover:bg-slate-700 transition-all font-medium text-xs shadow-sm">
                         Ver PDF
@@ -222,7 +226,7 @@ export default function Dispatch() {
                       <span className="text-color5/40 dark:text-color4/40 italic text-xs">Sem anexo</span>
                     )}
                   </td>
-                  <td className="px-4 md:px-6 py-4 text-sm text-right">
+                  <td className="px-4 md:px-6 py-3.5 text-sm text-right">
                     <button type="button" onClick={() => setReportToDelete(r.id)} className="text-color5/40 dark:text-color4/40 hover:text-red-500 dark:hover:text-red-400 font-medium transition-colors md:opacity-0 md:group-hover:opacity-100 focus:opacity-100">
                       Excluir
                     </button>
@@ -231,7 +235,7 @@ export default function Dispatch() {
               ))}
               {filteredReports.length === 0 && (
                 <tr>
-                  <td colSpan="8" className="px-4 md:px-6 py-12 text-center text-color5/40 dark:text-color4/40 text-sm">
+                  <td colSpan="8" className="px-4 md:px-6 py-10 text-center text-color5/40 dark:text-color4/40 text-sm">
                     Nenhum envio encontrado.
                   </td>
                 </tr>

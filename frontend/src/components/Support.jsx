@@ -77,59 +77,62 @@ export default function Support() {
 
   return (
     <div className="relative w-full">
-      <header className="mb-6 md:mb-10">
-        <h2 className="text-2xl font-bold tracking-tight text-color5 dark:text-white">Suporte Técnico</h2>
-        <p className="text-color5/60 dark:text-color4/60 mt-1.5 text-sm">Registro de manutenções, defeitos e diagnósticos.</p>
+      <header className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-color5 dark:text-white">Suporte Técnico</h2>
+          <p className="text-color5/60 dark:text-color4/60 mt-1 text-sm">Registro de manutenções e diagnósticos.</p>
+        </div>
       </header>
       
-      <form onSubmit={handleSubmit} className="mb-8 md:mb-12 bg-white dark:bg-slate-900 border border-color4 dark:border-slate-800 p-5 md:p-8 rounded-2xl shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6 transition-colors duration-300">
-        <div className="flex flex-col gap-2">
-          <label className="text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Produto/Modelo</label>
+      {/* Container de Formulário Compacto */}
+      <form onSubmit={handleSubmit} className="mb-8 bg-slate-50/50 dark:bg-slate-800/30 border border-color4/80 dark:border-slate-700/80 p-4 md:p-5 rounded-2xl shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4 transition-colors duration-300">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Produto/Modelo</label>
           <input 
             placeholder="Ex: ONU GPON" 
-            className="w-full p-3 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm" 
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm" 
             value={form.product_name} 
             onChange={e => setForm({...form, product_name: e.target.value})} 
             required 
           />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Serial Number</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Serial Number</label>
           <input 
             placeholder="SN do equipamento" 
-            className="w-full p-3 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm" 
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm" 
             value={form.serial_number} 
             onChange={e => setForm({...form, serial_number: e.target.value})} 
             required 
           />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Descrição do Problema</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Descrição do Problema</label>
           <textarea 
             placeholder="Relato do defeito" 
-            className="w-full p-3 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all resize-none min-h-[80px] shadow-sm" 
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all resize-none min-h-[60px] shadow-sm text-sm" 
             value={form.problem_description} 
             onChange={e => setForm({...form, problem_description: e.target.value})} 
             required 
           />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Ação de Correção</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Ação de Correção</label>
           <textarea 
             placeholder="O que foi feito (opcional)" 
-            className="w-full p-3 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all resize-none min-h-[80px] shadow-sm" 
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all resize-none min-h-[60px] shadow-sm text-sm" 
             value={form.fix_action} 
             onChange={e => setForm({...form, fix_action: e.target.value})} 
           />
         </div>
 
-        <div className="flex flex-col gap-2 sm:col-span-2">
-          <label className="text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Status</label>
+        <div className="flex flex-col gap-1.5 sm:col-span-2">
+          <label className="text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Status</label>
           <select 
-            className="w-full sm:w-1/2 p-3 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all appearance-none shadow-sm" 
+            className="w-full sm:w-1/2 px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all appearance-none shadow-sm text-sm" 
             value={form.status} 
             onChange={e => setForm({...form, status: e.target.value})} 
             required
@@ -140,15 +143,15 @@ export default function Support() {
           </select>
         </div>
         
-        <div className="sm:col-span-2 flex flex-col sm:flex-row items-center gap-3 pt-2">
-          <button type="submit" className="w-full sm:w-auto bg-gradient-to-r from-color2 to-color3 hover:opacity-90 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-md text-sm">
-            {editingId ? 'Salvar Alterações' : 'Registrar Chamado'}
-          </button>
+        <div className="sm:col-span-2 flex flex-col sm:flex-row items-center justify-end gap-3 pt-1">
           {editingId && (
-            <button type="button" onClick={resetForm} className="w-full sm:w-auto bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 text-color5 dark:text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:bg-color1 dark:hover:bg-slate-700 shadow-sm text-sm">
+            <button type="button" onClick={resetForm} className="w-full sm:w-auto bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 text-color5 dark:text-white px-5 py-2 rounded-xl font-medium transition-all duration-200 hover:bg-color1 dark:hover:bg-slate-700 shadow-sm text-sm">
               Cancelar
             </button>
           )}
+          <button type="submit" className="w-full sm:w-auto bg-gradient-to-r from-color2 to-color3 hover:opacity-90 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-md text-sm">
+            {editingId ? 'Salvar Alterações' : 'Registrar Chamado'}
+          </button>
         </div>
       </form>
 
@@ -161,7 +164,7 @@ export default function Support() {
           <input 
             type="text" 
             placeholder="Pesquisar chamados ou datas..." 
-            className="w-full sm:w-72 pl-10 p-2.5 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm"
+            className="w-full sm:w-72 pl-10 px-3 py-2 bg-white dark:bg-slate-800 border border-color4 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-white/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
@@ -173,29 +176,29 @@ export default function Support() {
           <table className="w-full text-left border-collapse whitespace-nowrap min-w-max">
             <thead>
               <tr className="bg-color1/50 dark:bg-slate-800/50 border-b border-color4 dark:border-slate-800">
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Produto</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Serial</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest max-w-[200px]">Problema</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest max-w-[200px]">Correção</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Status</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Data</th>
-                <th className="px-4 md:px-6 py-4 text-[11px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest text-right">Ações</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Produto</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Serial</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest max-w-[200px]">Problema</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest max-w-[200px]">Correção</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Status</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest">Data</th>
+                <th className="px-4 md:px-6 py-3.5 text-[10px] font-bold text-color5/60 dark:text-color4/60 uppercase tracking-widest text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-color4/40 dark:divide-slate-800/80">
               {filteredTickets.map(t => (
                 <tr key={t.id} className="hover:bg-color1 dark:hover:bg-slate-800/50 transition-colors duration-150 group">
-                  <td className="px-4 md:px-6 py-4 text-sm font-medium text-color5 dark:text-white">{t.product_name}</td>
-                  <td className="px-4 md:px-6 py-4 text-sm font-mono text-color5/80 dark:text-color4/80">{t.serial_number}</td>
-                  <td className="px-4 md:px-6 py-4 text-sm text-color5/60 dark:text-color4/60 max-w-[200px] truncate" title={t.problem_description}>{t.problem_description}</td>
-                  <td className="px-4 md:px-6 py-4 text-sm text-color5/60 dark:text-color4/60 max-w-[200px] truncate" title={t.fix_action}>{t.fix_action || '-'}</td>
-                  <td className="px-4 md:px-6 py-4">
+                  <td className="px-4 md:px-6 py-3.5 text-sm font-medium text-color5 dark:text-white">{t.product_name}</td>
+                  <td className="px-4 md:px-6 py-3.5 text-sm font-mono text-color5/80 dark:text-color4/80">{t.serial_number}</td>
+                  <td className="px-4 md:px-6 py-3.5 text-sm text-color5/60 dark:text-color4/60 max-w-[200px] truncate" title={t.problem_description}>{t.problem_description}</td>
+                  <td className="px-4 md:px-6 py-3.5 text-sm text-color5/60 dark:text-color4/60 max-w-[200px] truncate" title={t.fix_action}>{t.fix_action || '-'}</td>
+                  <td className="px-4 md:px-6 py-3.5">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest border ${t.status === 'CORRIGIDO' ? 'bg-color2/10 dark:bg-color2/20 text-color2 dark:text-color3 border-color2/30' : t.status === 'CONDENADO' ? 'bg-color5 dark:bg-red-500/20 text-white dark:text-red-400 border-color5 dark:border-red-500/30' : 'bg-white dark:bg-slate-800 text-color5/70 dark:text-color4/70 border-color4 dark:border-slate-700 shadow-sm'}`}>
                       {t.status}
                     </span>
                   </td>
-                  <td className="px-4 md:px-6 py-4 text-sm text-color5/80 dark:text-color4/80">{new Date(t.support_at).toLocaleDateString('pt-BR')}</td>
-                  <td className="px-4 md:px-6 py-4 text-sm text-right">
+                  <td className="px-4 md:px-6 py-3.5 text-sm text-color5/80 dark:text-color4/80">{new Date(t.support_at).toLocaleDateString('pt-BR')}</td>
+                  <td className="px-4 md:px-6 py-3.5 text-sm text-right">
                     <button type="button" onClick={() => handleEdit(t)} className="text-color2 dark:text-color3 hover:text-color2/80 font-medium transition-colors mr-3 md:mr-4 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100">
                       Editar
                     </button>
@@ -207,7 +210,7 @@ export default function Support() {
               ))}
               {filteredTickets.length === 0 && (
                 <tr>
-                  <td colSpan="7" className="px-4 md:px-6 py-12 text-center text-color5/40 dark:text-color4/40 text-sm">
+                  <td colSpan="7" className="px-4 md:px-6 py-10 text-center text-color5/40 dark:text-color4/40 text-sm">
                     Nenhum chamado encontrado.
                   </td>
                 </tr>
