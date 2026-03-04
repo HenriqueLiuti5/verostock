@@ -1,64 +1,135 @@
 // Login.jsx
 import { useState } from 'react';
 import api from '../services/api';
+import logo from '../assets/VERONLINE-simbolo-colorido-semfundo.png';
 
-export default function Login({ setAuth }) {
+export default function Login({ setAuth, darkMode, setDarkMode }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg(''); // Reseta a mensagem ao tentar novamente
     try {
       const res = await api.post('token/', { username, password });
       localStorage.setItem('access_token', res.data.access);
+      localStorage.setItem('username', username);
       setAuth(true); 
     } catch (error) {
-      alert('Credenciais inválidas');
+      setErrorMsg('Credenciais incorretas. Verifique seu usuário e senha.');
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-color1 text-color5 font-sans selection:bg-color2/20 selection:text-color5 px-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,102,255,0.06)_0,rgba(248,250,252,1)_100%)] pointer-events-none"></div>
+    <div className="flex min-h-screen bg-white dark:bg-color5 font-sans selection:bg-color2/20 dark:selection:text-color1 overflow-hidden transition-colors duration-300">
       
-      <form onSubmit={handleSubmit} className="bg-white border border-color4 p-10 rounded-3xl shadow-xl shadow-color4/30 w-full max-w-sm relative z-10 animate-in fade-in zoom-in-95 duration-500">
-        <div className="flex flex-col items-center mb-10">
-          <div className="w-12 h-12 bg-white border border-color4 rounded-xl flex items-center justify-center mb-6 shadow-sm">
-            <div className="w-4 h-4 rounded-full bg-gradient-to-r from-color2 to-color3 shadow-[0_0_12px_rgba(0,102,255,0.4)]"></div>
-          </div>
-          <h2 className="text-2xl font-bold tracking-tight text-color5">Acesse o VeroStock</h2>
-          <p className="text-color5/50 mt-1.5 text-sm text-center">Insira suas credenciais para gerenciar.</p>
-        </div>
+      {/* Botão de Tema Top-Right no Login */}
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-50">
+        <button 
+          type="button"
+          onClick={() => setDarkMode(prev => !prev)}
+          className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-color5/60 dark:text-color4 hover:text-color2 dark:hover:text-color3 shadow-sm transition-all duration-200"
+        >
+          {darkMode ? (
+            <svg className="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          ) : (
+            <svg className="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+          )}
+        </button>
+      </div>
 
-        <div className="space-y-5">
-          <div>
-            <label className="block text-[10px] font-bold text-color5/60 uppercase tracking-widest mb-2">Usuário</label>
-            <input 
-              className="w-full p-3.5 bg-white border border-color4 rounded-xl text-color5 placeholder-color5/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm" 
-              placeholder="Digite seu usuário" 
-              value={username} 
-              onChange={(e) => setUsername(e.target.value)} 
-              required 
-            />
+      {/* Lado Esquerdo: Visual/Bem-vindo */}
+      <div className="hidden lg:flex lg:w-[55%] bg-gradient-to-br from-color2 to-color3 relative items-center justify-center p-12 overflow-hidden">
+        {/* Elementos Decorativos */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-black/10 rounded-full blur-3xl"></div>
+
+        <div className="relative z-10 text-center flex flex-col items-center max-w-md animate-in fade-in zoom-in-95 duration-1000 px-4">
+          <div className="w-24 h-24 flex items-center justify-center shadow-2xl rounded-full mb-10 bg-[#0f172a] p-5 border border-white/10">
+            <img src={logo} alt="Logo" className="w-full h-full object-contain" />
           </div>
           
-          <div>
-            <label className="block text-[10px] font-bold text-color5/60 uppercase tracking-widest mb-2">Senha</label>
-            <input 
-              className="w-full p-3.5 bg-white border border-color4 rounded-xl text-color5 placeholder-color5/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm text-sm" 
-              type="password" 
-              placeholder="••••••••" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              required 
-            />
-          </div>
+          <h1 className="text-4xl lg:text-5xl font-extrabold text-white mb-6 tracking-tight">
+            Bem-vindo de volta!
+          </h1>
+          
+          <p className="text-white/80 text-lg leading-relaxed font-medium">
+            Acesse o painel IOT para gerenciar seus roteadores e monitorar a rede com eficiência.
+          </p>
         </div>
+      </div>
 
-        <button className="w-full bg-gradient-to-r from-color2 to-color3 hover:opacity-90 text-white font-medium p-3.5 rounded-xl mt-10 transition-all duration-300 shadow-md flex justify-center items-center text-sm" type="submit">
-          Entrar no sistema
-        </button>
-      </form>
+      {/* Lado Direito: Formulário */}
+      <div className="w-full lg:w-[45%] flex items-center justify-center p-6 sm:p-12 lg:p-16 bg-white dark:bg-color5 relative transition-colors duration-300">
+        <div className="w-full max-w-[400px] animate-in slide-in-from-bottom-8 lg:slide-in-from-right-8 duration-700">
+          
+          {/* Logo mobile */}
+          <div className="flex lg:hidden justify-center mb-8">
+            <div className="w-20 h-20 flex items-center justify-center shadow-lg rounded-2xl bg-[#0f172a] p-4 border border-color4 dark:border-slate-700">
+               <img src={logo} alt="Logo" className="w-full h-full object-contain" />
+            </div>
+          </div>
+
+          <header className="mb-8 sm:mb-10 text-center lg:text-left">
+            <h2 className="text-2xl sm:text-3xl font-bold text-color5 dark:text-white mb-2 tracking-tight">Acesse sua conta</h2>
+            <p className="text-slate-400 dark:text-slate-500 font-medium text-sm sm:text-base">Entre com suas credenciais para continuar.</p>
+          </header>
+
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+            
+            {/* Aviso de erro na tela */}
+            {errorMsg && (
+              <div className="p-3 sm:p-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-sm font-medium flex items-center gap-3 animate-in fade-in zoom-in-95 duration-300">
+                <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                {errorMsg}
+              </div>
+            )}
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-bold text-color5 dark:text-white ml-1">Usuário corporativo</label>
+              <input 
+                className={`w-full p-4 bg-slate-50 dark:bg-slate-800/50 border ${errorMsg ? 'border-red-300 dark:border-red-500/50' : 'border-slate-100 dark:border-slate-700/50'} rounded-xl text-color5 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-color2 dark:focus:border-color3 focus:ring-4 focus:ring-color2/5 dark:focus:ring-color3/10 transition-all text-sm font-medium`}
+                placeholder="nome@exemplo.com" 
+                value={username} 
+                onChange={(e) => setUsername(e.target.value)} 
+                required 
+              />
+            </div>
+            
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center px-1">
+                <label className="text-sm font-bold text-color5 dark:text-white">Senha</label>
+              </div>
+              <div className="relative">
+                <input 
+                  className={`w-full p-4 bg-slate-50 dark:bg-slate-800/50 border ${errorMsg ? 'border-red-300 dark:border-red-500/50' : 'border-slate-100 dark:border-slate-700/50'} rounded-xl text-color5 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-color2 dark:focus:border-color3 focus:ring-4 focus:ring-color2/5 dark:focus:ring-color3/10 transition-all text-sm font-medium`} 
+                  type="password" 
+                  placeholder="exemplo@123" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  required 
+                />
+              </div>
+            </div>
+
+            <button 
+              type="submit"
+              className="w-full bg-color2 hover:bg-blue-600 dark:bg-color2 dark:hover:bg-color3 active:scale-[0.98] text-white font-bold p-4 rounded-xl mt-4 sm:mt-6 transition-all duration-200 shadow-xl shadow-color2/25 flex justify-center items-center text-sm tracking-wide"
+            >
+              Entrar no Sistema
+            </button>
+            
+            <div className="mt-6 sm:mt-8 text-center">
+              <p className="text-slate-400 dark:text-slate-500 text-sm font-medium">
+                Não tem uma conta? <span className="text-color2 dark:text-color3 hover:underline cursor-pointer font-bold block sm:inline mt-1 sm:mt-0">Criar nova conta</span>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+      
     </div>
   );
 }
