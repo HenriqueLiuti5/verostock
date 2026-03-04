@@ -1,3 +1,4 @@
+// Support.jsx
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 
@@ -61,79 +62,142 @@ export default function Support() {
   };
 
   return (
-    <div className="p-4 relative">
-      <h2 className="text-2xl font-bold mb-4">Suporte</h2>
+    <div className="relative w-full">
+      <header className="mb-10">
+        <h2 className="text-2xl font-bold tracking-tight text-color5">Suporte Técnico</h2>
+        <p className="text-color5/60 mt-1.5 text-sm">Registro de manutenções, defeitos e diagnósticos.</p>
+      </header>
       
-      <form onSubmit={handleSubmit} className="mb-8 grid grid-cols-2 gap-4 bg-gray-100 p-4 rounded">
-        <input placeholder="Produto/Modelo" className="p-2 border" value={form.product_name} onChange={e => setForm({...form, product_name: e.target.value})} required />
-        <input placeholder="Serial Number" className="p-2 border" value={form.serial_number} onChange={e => setForm({...form, serial_number: e.target.value})} required />
-        <textarea placeholder="Descrição do Problema" className="p-2 border" value={form.problem_description} onChange={e => setForm({...form, problem_description: e.target.value})} required />
-        <textarea placeholder="Ação de Correção" className="p-2 border" value={form.fix_action} onChange={e => setForm({...form, fix_action: e.target.value})} />
-        <select className="p-2 border col-span-2" value={form.status} onChange={e => setForm({...form, status: e.target.value})} required>
-          <option value="PENDENTE">Pendente</option>
-          <option value="CORRIGIDO">Corrigido</option>
-          <option value="CONDENADO">Condenado</option>
-        </select>
+      <form onSubmit={handleSubmit} className="mb-12 bg-white border border-color4 p-6 md:p-8 rounded-2xl shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6 transition-all">
+        <div className="flex flex-col gap-2">
+          <label className="text-[11px] font-bold text-color5/60 uppercase tracking-widest">Produto/Modelo</label>
+          <input 
+            placeholder="Ex: ONU GPON" 
+            className="w-full p-3 bg-white border border-color4 rounded-xl text-color5 placeholder-color5/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm" 
+            value={form.product_name} 
+            onChange={e => setForm({...form, product_name: e.target.value})} 
+            required 
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-[11px] font-bold text-color5/60 uppercase tracking-widest">Serial Number</label>
+          <input 
+            placeholder="SN do equipamento" 
+            className="w-full p-3 bg-white border border-color4 rounded-xl text-color5 placeholder-color5/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all shadow-sm" 
+            value={form.serial_number} 
+            onChange={e => setForm({...form, serial_number: e.target.value})} 
+            required 
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-[11px] font-bold text-color5/60 uppercase tracking-widest">Descrição do Problema</label>
+          <textarea 
+            placeholder="Relato do defeito" 
+            className="w-full p-3 bg-white border border-color4 rounded-xl text-color5 placeholder-color5/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all resize-none min-h-[80px] shadow-sm" 
+            value={form.problem_description} 
+            onChange={e => setForm({...form, problem_description: e.target.value})} 
+            required 
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-[11px] font-bold text-color5/60 uppercase tracking-widest">Ação de Correção</label>
+          <textarea 
+            placeholder="O que foi feito (opcional)" 
+            className="w-full p-3 bg-white border border-color4 rounded-xl text-color5 placeholder-color5/40 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all resize-none min-h-[80px] shadow-sm" 
+            value={form.fix_action} 
+            onChange={e => setForm({...form, fix_action: e.target.value})} 
+          />
+        </div>
+
+        <div className="flex flex-col gap-2 md:col-span-2">
+          <label className="text-[11px] font-bold text-color5/60 uppercase tracking-widest">Status</label>
+          <select 
+            className="w-full md:w-1/2 p-3 bg-white border border-color4 rounded-xl text-color5 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/20 transition-all appearance-none shadow-sm" 
+            value={form.status} 
+            onChange={e => setForm({...form, status: e.target.value})} 
+            required
+          >
+            <option value="PENDENTE">Pendente</option>
+            <option value="CORRIGIDO">Corrigido</option>
+            <option value="CONDENADO">Condenado</option>
+          </select>
+        </div>
         
-        <div className="col-span-2 flex gap-4">
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-            {editingId ? 'Atualizar Suporte' : 'Registrar Suporte'}
+        <div className="md:col-span-2 flex items-center gap-3 pt-2">
+          <button type="submit" className="bg-gradient-to-r from-color2 to-color3 hover:opacity-90 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-md text-sm">
+            {editingId ? 'Salvar Alterações' : 'Registrar Chamado'}
           </button>
           {editingId && (
-            <button type="button" onClick={resetForm} className="bg-gray-500 text-white px-4 py-2 rounded">
+            <button type="button" onClick={resetForm} className="bg-white border border-color4 text-color5 px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:bg-color1 shadow-sm text-sm">
               Cancelar
             </button>
           )}
         </div>
       </form>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse min-w-max">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="p-2 border">Produto</th>
-              <th className="p-2 border">Serial</th>
-              <th className="p-2 border max-w-xs">Problema</th>
-              <th className="p-2 border max-w-xs">Correção</th>
-              <th className="p-2 border">Status</th>
-              <th className="p-2 border">Data</th>
-              <th className="p-2 border">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tickets.map(t => (
-              <tr key={t.id} className="border-b hover:bg-gray-50">
-                <td className="p-2 border">{t.product_name}</td>
-                <td className="p-2 border">{t.serial_number}</td>
-                <td className="p-2 border max-w-xs truncate" title={t.problem_description}>{t.problem_description}</td>
-                <td className="p-2 border max-w-xs truncate" title={t.fix_action}>{t.fix_action}</td>
-                <td className="p-2 border font-semibold">
-                  <span className={`px-2 py-1 rounded text-sm ${t.status === 'CORRIGIDO' ? 'bg-green-100 text-green-800' : t.status === 'CONDENADO' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                    {t.status}
-                  </span>
-                </td>
-                <td className="p-2 border">{new Date(t.support_at).toLocaleDateString('pt-BR')}</td>
-                <td className="p-2 border">
-                  <button type="button" onClick={() => handleEdit(t)} className="text-blue-500 mr-4 hover:underline">Editar</button>
-                  <button type="button" onClick={() => setTicketToDelete(t.id)} className="text-red-500 hover:underline">Excluir</button>
-                </td>
+      <div className="bg-white border border-color4 rounded-2xl overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse whitespace-nowrap">
+            <thead>
+              <tr className="bg-color1/50 border-b border-color4">
+                <th className="px-6 py-4 text-[11px] font-bold text-color5/60 uppercase tracking-widest">Produto</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-color5/60 uppercase tracking-widest">Serial</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-color5/60 uppercase tracking-widest max-w-[200px]">Problema</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-color5/60 uppercase tracking-widest max-w-[200px]">Correção</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-color5/60 uppercase tracking-widest">Status</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-color5/60 uppercase tracking-widest">Data</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-color5/60 uppercase tracking-widest text-right">Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-color4/40">
+              {tickets.map(t => (
+                <tr key={t.id} className="hover:bg-color1 transition-colors duration-150 group">
+                  <td className="px-6 py-4 text-sm font-medium text-color5">{t.product_name}</td>
+                  <td className="px-6 py-4 text-sm font-mono text-color5/80">{t.serial_number}</td>
+                  <td className="px-6 py-4 text-sm text-color5/60 max-w-[200px] truncate" title={t.problem_description}>{t.problem_description}</td>
+                  <td className="px-6 py-4 text-sm text-color5/60 max-w-[200px] truncate" title={t.fix_action}>{t.fix_action || '-'}</td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest border ${t.status === 'CORRIGIDO' ? 'bg-color2/10 text-color2 border-color2/30' : t.status === 'CONDENADO' ? 'bg-color5 text-white border-color5' : 'bg-white text-color5/70 border-color4 shadow-sm'}`}>
+                      {t.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-color5/80">{new Date(t.support_at).toLocaleDateString('pt-BR')}</td>
+                  <td className="px-6 py-4 text-sm text-right">
+                    <button type="button" onClick={() => handleEdit(t)} className="text-color2 hover:text-color2/80 font-medium transition-colors mr-4 opacity-0 group-hover:opacity-100 focus:opacity-100">
+                      Editar
+                    </button>
+                    <button type="button" onClick={() => setTicketToDelete(t.id)} className="text-color5/40 hover:text-red-500 font-medium transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+                      Excluir
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {tickets.length === 0 && (
+                <tr>
+                  <td colSpan="7" className="px-6 py-12 text-center text-color5/40 text-sm">
+                    Nenhum chamado de suporte registrado.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {ticketToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">Confirmar Exclusão</h3>
-            <p className="text-gray-600 mb-6">Tem certeza que deseja excluir este chamado de suporte? Esta ação não pode ser desfeita.</p>
-            <div className="flex justify-end gap-4">
-              <button onClick={() => setTicketToDelete(null)} className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">
+        <div className="fixed inset-0 bg-color5/20 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white border border-color4 p-8 rounded-2xl shadow-xl max-w-md w-full scale-100 animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold mb-2 text-color5 tracking-tight">Confirmar Exclusão</h3>
+            <p className="text-color5/60 text-sm leading-relaxed mb-8">Tem certeza que deseja excluir este chamado de suporte? Esta ação não pode ser desfeita.</p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setTicketToDelete(null)} className="px-5 py-2.5 bg-white border border-color4 text-color5 rounded-xl hover:bg-color1 font-medium transition-all duration-200 text-sm shadow-sm">
                 Cancelar
               </button>
-              <button onClick={confirmDelete} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-                Excluir
+              <button onClick={confirmDelete} className="px-5 py-2.5 bg-color5 text-white rounded-xl hover:bg-color5/90 font-medium transition-all duration-200 shadow-md text-sm">
+                Excluir Chamado
               </button>
             </div>
           </div>
