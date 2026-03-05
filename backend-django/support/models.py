@@ -10,6 +10,7 @@ class SupportTickets(models.Model):
     ]
 
     product_name = models.CharField("Produto/Modelo", max_length=255)
+    client = models.CharField("Cliente", max_length=100)
     serial_number = models.CharField("Serial", max_length=100)
     problem_description = models.TextField("Problema")
     fix_action = models.TextField("Correção", blank=True, null=True)

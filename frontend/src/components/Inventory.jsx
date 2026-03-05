@@ -8,7 +8,13 @@ export default function Inventory() {
   const [editingId, setEditingId] = useState(null);
   const [productToDelete, setProductToDelete] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  
+  // Filtros
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+  const [dateStart, setDateStart] = useState('');
+  const [dateEnd, setDateEnd] = useState('');
+
   const [form, setForm] = useState({ 
     name: '', 
     description: '', 
@@ -79,32 +85,48 @@ export default function Inventory() {
     return cat ? cat.name : 'N/A';
   };
 
-  const handleExportCSV = async () => {
-    try {
-      const response = await api.get('products/export_csv/', { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'estoque.csv');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      setErrorMessage("Erro ao exportar CSV.");
-    }
-  };
-
   const filteredProducts = products.filter(p => {
     const searchLower = searchTerm.toLowerCase();
-    const dateStr = new Date(p.created_at).toLocaleDateString('pt-BR');
-    return (
-      p.name.toLowerCase().includes(searchLower) ||
+    const pDate = new Date(p.created_at);
+    const start = dateStart ? new Date(dateStart + 'T00:00:00') : null;
+    const end = dateEnd ? new Date(dateEnd + 'T23:59:59') : null;
+
+    const matchesSearch = p.name.toLowerCase().includes(searchLower) ||
       getCategoryName(p.category).toLowerCase().includes(searchLower) ||
       (p.description && p.description.toLowerCase().includes(searchLower)) ||
-      (p.observations && p.observations.toLowerCase().includes(searchLower)) ||
-      dateStr.includes(searchLower)
-    );
+      (p.observations && p.observations.toLowerCase().includes(searchLower));
+
+    const matchesCategory = filterCategory ? p.category.toString() === filterCategory.toString() : true;
+    const matchesDate = (!start || pDate >= start) && (!end || pDate <= end);
+
+    return matchesSearch && matchesCategory && matchesDate;
   });
+
+  const handleExportCSV = () => {
+    const headers = ['ID', 'Nome', 'Categoria', 'Quantidade', 'Descrição', 'Observações', 'Criado em'];
+    const escapeCsv = (str) => '"' + String(str || '').replace(/"/g, '""') + '"';
+    
+    const csvContent = [
+      headers.join(';'),
+      ...filteredProducts.map(p => [
+        p.id,
+        escapeCsv(p.name),
+        escapeCsv(getCategoryName(p.category)),
+        p.quantity,
+        escapeCsv(p.description),
+        escapeCsv(p.observations),
+        new Date(p.created_at).toLocaleDateString('pt-BR')
+      ].join(';'))
+    ].join('\n');
+
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.setAttribute('download', 'estoque.csv');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
 
   return (
     <div className="relative w-full">
@@ -197,19 +219,48 @@ export default function Inventory() {
         </div>
       </form>
 
-      <div className="mb-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <h3 className="text-lg font-bold text-color5 dark:text-white">Catálogo de Produtos</h3>
-        <div className="relative w-full sm:w-auto">
+      {/* Barra de Filtros */}
+      <div className="mb-4 bg-white dark:bg-slate-900 border border-color4/80 dark:border-slate-800 p-4 rounded-2xl shadow-sm flex flex-col lg:flex-row gap-4 justify-between items-center transition-colors duration-300">
+        <div className="relative w-full lg:w-1/3">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg className="w-4 h-4 text-color5/40 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
           </div>
           <input 
             type="text" 
-            placeholder="Pesquisar no estoque ou datas..." 
-            className="w-full sm:w-72 pl-10 px-3 py-2 bg-white dark:bg-slate-900 border border-color4/80 dark:border-slate-800 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-slate-500 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/10 transition-all shadow-sm text-sm"
+            placeholder="Pesquisar..." 
+            className="w-full pl-10 px-3 py-2 bg-slate-50 dark:bg-slate-800/40 border border-color4/60 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-slate-500 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/10 transition-all text-sm"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
+        </div>
+        
+        <div className="flex flex-col sm:flex-row w-full lg:w-auto gap-3">
+          <select 
+            className="px-3 py-2 bg-slate-50 dark:bg-slate-800/40 border border-color4/60 dark:border-slate-700 rounded-xl text-color5 dark:text-white focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/10 transition-all appearance-none text-sm w-full sm:w-40"
+            value={filterCategory}
+            onChange={e => setFilterCategory(e.target.value)}
+          >
+            <option value="">Todas Categorias</option>
+            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <input 
+              type="date" 
+              title="Data Inicial"
+              className="w-full sm:w-auto px-3 py-2 bg-slate-50 dark:bg-slate-800/40 border border-color4/60 dark:border-slate-700 rounded-xl text-color5 dark:text-white focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/10 transition-all text-sm dark:[color-scheme:dark]"
+              value={dateStart}
+              onChange={e => setDateStart(e.target.value)}
+            />
+            <span className="text-color5/40 dark:text-slate-500 text-sm">até</span>
+            <input 
+              type="date" 
+              title="Data Final"
+              className="w-full sm:w-auto px-3 py-2 bg-slate-50 dark:bg-slate-800/40 border border-color4/60 dark:border-slate-700 rounded-xl text-color5 dark:text-white focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/10 transition-all text-sm dark:[color-scheme:dark]"
+              value={dateEnd}
+              onChange={e => setDateEnd(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
@@ -262,6 +313,7 @@ export default function Inventory() {
         </div>
       </div>
 
+      {/* Modais omitidos para brevidade (mantém o mesmo que você já tem) */}
       {productToDelete && (
         <div className="fixed inset-0 bg-color5/20 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
           <div className="bg-white dark:bg-slate-900 border border-color4/80 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md scale-100 animate-in zoom-in-95 duration-200">

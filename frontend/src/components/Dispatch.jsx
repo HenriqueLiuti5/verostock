@@ -7,7 +7,12 @@ export default function Dispatch() {
   const [products, setProducts] = useState([]);
   const [reportToDelete, setReportToDelete] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  
+  // Filtros
   const [searchTerm, setSearchTerm] = useState('');
+  const [dateStart, setDateStart] = useState('');
+  const [dateEnd, setDateEnd] = useState('');
+
   const [form, setForm] = useState({ 
     product: '', 
     router_id: '', 
@@ -69,33 +74,48 @@ export default function Dispatch() {
     return prod ? prod.name : 'Produto Excluído/N/A';
   };
 
-  const handleExportCSV = async () => {
-    try {
-      const response = await api.get('reports/export_csv/', { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'envios.csv');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      setErrorMessage("Erro ao exportar CSV.");
-    }
-  };
-
   const filteredReports = reports.filter(r => {
     const searchLower = searchTerm.toLowerCase();
-    const dateStr = new Date(r.date_sent + 'T00:00:00').toLocaleDateString('pt-BR');
-    return (
-      getProductName(r.product, r).toLowerCase().includes(searchLower) ||
+    const rDate = new Date(r.date_sent + 'T00:00:00');
+    const start = dateStart ? new Date(dateStart + 'T00:00:00') : null;
+    const end = dateEnd ? new Date(dateEnd + 'T23:59:59') : null;
+
+    const matchesSearch = getProductName(r.product, r).toLowerCase().includes(searchLower) ||
       r.client_name.toLowerCase().includes(searchLower) ||
       (r.router_id && r.router_id.toLowerCase().includes(searchLower)) ||
       (r.serial_number && r.serial_number.toLowerCase().includes(searchLower)) ||
-      (r.mac_addres && r.mac_addres.toLowerCase().includes(searchLower)) ||
-      dateStr.includes(searchLower)
-    );
+      (r.mac_addres && r.mac_addres.toLowerCase().includes(searchLower));
+
+    const matchesDate = (!start || rDate >= start) && (!end || rDate <= end);
+
+    return matchesSearch && matchesDate;
   });
+
+  const handleExportCSV = () => {
+    const headers = ['ID', 'Produto', 'Cliente', 'Router ID', 'Serial', 'MAC', 'Data Envio'];
+    const escapeCsv = (str) => '"' + String(str || '').replace(/"/g, '""') + '"';
+
+    const csvContent = [
+      headers.join(';'),
+      ...filteredReports.map(r => [
+        r.id,
+        escapeCsv(getProductName(r.product, r)),
+        escapeCsv(r.client_name),
+        escapeCsv(r.router_id),
+        escapeCsv(r.serial_number),
+        escapeCsv(r.mac_addres),
+        new Date(r.date_sent + 'T00:00:00').toLocaleDateString('pt-BR')
+      ].join(';'))
+    ].join('\n');
+
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.setAttribute('download', 'envios.csv');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
 
   return (
     <div className="relative w-full">
@@ -195,19 +215,39 @@ export default function Dispatch() {
         </div>
       </form>
 
-      <div className="mb-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <h3 className="text-lg font-bold text-color5 dark:text-white">Registros de Envio</h3>
-        <div className="relative w-full sm:w-auto">
+      {/* Barra de Filtros */}
+      <div className="mb-4 bg-white dark:bg-slate-900 border border-color4/80 dark:border-slate-800 p-4 rounded-2xl shadow-sm flex flex-col lg:flex-row gap-4 justify-between items-center transition-colors duration-300">
+        <div className="relative w-full lg:w-1/3">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg className="w-4 h-4 text-color5/40 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
           </div>
           <input 
             type="text" 
-            placeholder="Pesquisar envios ou datas..." 
-            className="w-full sm:w-72 pl-10 px-3 py-2 bg-white dark:bg-slate-900 border border-color4/80 dark:border-slate-800 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-slate-500 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/10 transition-all shadow-sm text-sm"
+            placeholder="Pesquisar..." 
+            className="w-full pl-10 px-3 py-2 bg-slate-50 dark:bg-slate-800/40 border border-color4/60 dark:border-slate-700 rounded-xl text-color5 dark:text-white placeholder-color5/40 dark:placeholder-slate-500 focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/10 transition-all text-sm"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
+        </div>
+        
+        <div className="flex flex-col sm:flex-row w-full lg:w-auto gap-3">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <input 
+              type="date" 
+              title="Data Inicial"
+              className="w-full sm:w-auto px-3 py-2 bg-slate-50 dark:bg-slate-800/40 border border-color4/60 dark:border-slate-700 rounded-xl text-color5 dark:text-white focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/10 transition-all text-sm dark:[color-scheme:dark]"
+              value={dateStart}
+              onChange={e => setDateStart(e.target.value)}
+            />
+            <span className="text-color5/40 dark:text-slate-500 text-sm">até</span>
+            <input 
+              type="date" 
+              title="Data Final"
+              className="w-full sm:w-auto px-3 py-2 bg-slate-50 dark:bg-slate-800/40 border border-color4/60 dark:border-slate-700 rounded-xl text-color5 dark:text-white focus:outline-none focus:border-color2 focus:ring-2 focus:ring-color2/10 transition-all text-sm dark:[color-scheme:dark]"
+              value={dateEnd}
+              onChange={e => setDateEnd(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
@@ -263,6 +303,7 @@ export default function Dispatch() {
         </div>
       </div>
 
+      {/* Modais omitidos para brevidade */}
       {reportToDelete && (
         <div className="fixed inset-0 bg-color5/20 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
           <div className="bg-white dark:bg-slate-900 border border-color4/80 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md scale-100 animate-in zoom-in-95 duration-200">
