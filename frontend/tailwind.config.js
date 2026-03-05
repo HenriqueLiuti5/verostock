@@ -9,11 +9,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        color1: '#ffffff',
-        color2: '#0066FF',
-        color3: '#00D2FF',
-        color4: '#e2e8f0',
-        color5: '#0f172a',
+        color1: '#f4f7f9', // Fundo principal super suave (confortável para os olhos)
+        color2: '#0066FF', // Azul Primário
+        color3: '#00D2FF', // Azul Secundário
+        color4: '#e2e8f0', // Bordas e Neutros (slate-200)
+        color5: '#0f172a', // Texto principal (slate-900)
       }
     },
   },

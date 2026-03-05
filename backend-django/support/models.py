@@ -1,5 +1,4 @@
 from django.db import models
-from inventory.models import Product
 
 # Create your models here.
 
