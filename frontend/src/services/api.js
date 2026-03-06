@@ -12,4 +12,23 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('username');
+      
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/') {
+           window.location.href = '/'; 
+      } else {
+          window.location.reload(); 
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;
